@@ -5,16 +5,16 @@
 // - Fill in the environment variables
 import 'dotenv/config'
 
-import 'hardhat-deploy'
-import 'hardhat-contract-sizer'
-import '@nomiclabs/hardhat-ethers'
 import '@layerzerolabs/toolbox-hardhat'
+import '@nomiclabs/hardhat-ethers'
+import 'hardhat-contract-sizer'
+import 'hardhat-deploy'
 import { HardhatUserConfig, HttpNetworkAccountsUserConfig } from 'hardhat/types'
 
 import { EndpointId } from '@layerzerolabs/lz-definitions'
 
-import './type-extensions'
 import './tasks/sendOFT'
+import './type-extensions'
 
 // Set your preferred authentication method
 //
@@ -46,6 +46,8 @@ const config: HardhatUserConfig = {
             {
                 version: '0.8.22',
                 settings: {
+                    // required due to constuctor params issue
+                    viaIR: true,
                     optimizer: {
                         enabled: true,
                         runs: 200,
