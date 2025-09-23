@@ -45,6 +45,7 @@ const deploy: DeployFunction = async (hre) => {
     const { address } = await deploy(contractName, {
         from: deployer,
         deterministicDeployment: '0x0000000000000000000000000000000000000000000000000000000000000000',
+        gasLimit: 3000000,
         args: [
             endpointV2Deployment.address, // LayerZero's EndpointV2 address
             owner, // owner
