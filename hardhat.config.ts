@@ -68,7 +68,7 @@ const config: HardhatUserConfig = {
         },
         'bsc-mainnet': {
             eid: EndpointId.BSC_MAINNET,
-            url: process.env.RPC_URL_56 || 'https://binance.llamarpc.com',
+            url: process.env.RPC_URL_56 || 'https://bsc-rpc.publicnode.com',
             accounts,
         },
         'avalanche-mainnet': {
@@ -86,7 +86,7 @@ const config: HardhatUserConfig = {
             default: 0, // wallet address of index[0], of the mnemonic in .env
         },
         owner: {
-            default: '0x6Fb5916c0f57f88004d5b5EB25f6f4D77353a1eD', // the usual owner for initial deployments of COW protocol contracts
+            default: '0x423cEc87f19F0778f549846e0801ee267a917935', // COW DAO protocol multisig
         },
     },
 }
