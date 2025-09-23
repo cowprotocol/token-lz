@@ -71,6 +71,11 @@ const config: HardhatUserConfig = {
             url: process.env.RPC_URL_56 || 'https://binance.llamarpc.com',
             accounts,
         },
+        'avalanche-mainnet': {
+            eid: EndpointId.AVALANCHE_MAINNET,
+            url: process.env.RPC_URL_43114 || 'https://avalanche-mainnet.gateway.tenderly.co',
+            accounts,
+        },
         hardhat: {
             // Need this for testing because TestHelperOz5.sol is exceeding the compiled contract size limit
             allowUnlimitedContractSize: true,
