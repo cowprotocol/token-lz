@@ -46,7 +46,8 @@ const config: HardhatUserConfig = {
             {
                 version: '0.8.30',
                 settings: {
-                    // required due to constuctor params issue
+                    // required because the number of internal parameters for the CowOft contract is very high,
+                    // and there is no practical way to reduce
                     viaIR: true,
                     optimizer: {
                         enabled: true,
@@ -57,17 +58,17 @@ const config: HardhatUserConfig = {
         ],
     },
     networks: {
-        'optimism-testnet': {
-            eid: EndpointId.OPTSEP_V2_TESTNET,
-            url: process.env.RPC_URL_OP_SEPOLIA || 'https://optimism-sepolia.gateway.tenderly.co',
+        'mainnet': {
+            eid: EndpointId.ETHEREUM_MAINNET,
+            url: process.env.RPC_URL_1 || 'https://mainnet.gateway.tenderly.co',
             accounts,
             oftAdapter: {
-                tokenAddress: '0x0', // Set the token address for the OFT adapter
+                tokenAddress: '0xDEf1CA1fb7FBcDC777520aa7f396b4E015F497aB', // Set the token address for the OFT adapter
             },
         },
-        'arbitrum-testnet': {
-            eid: EndpointId.ARBSEP_V2_TESTNET,
-            url: process.env.RPC_URL_ARB_SEPOLIA || 'https://arbitrum-sepolia.gateway.tenderly.co',
+        'bsc-mainnet': {
+            eid: EndpointId.BSC_MAINNET,
+            url: process.env.RPC_URL_56 || 'https://binance.llamarpc.com',
             accounts,
         },
         hardhat: {
@@ -78,6 +79,9 @@ const config: HardhatUserConfig = {
     namedAccounts: {
         deployer: {
             default: 0, // wallet address of index[0], of the mnemonic in .env
+        },
+        owner: {
+            default: '0x6Fb5916c0f57f88004d5b5EB25f6f4D77353a1eD', // the usual owner for initial deployments of COW protocol contracts
         },
     },
 }

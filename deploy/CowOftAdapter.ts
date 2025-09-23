@@ -8,12 +8,14 @@ const deploy: DeployFunction = async (hre) => {
     const { getNamedAccounts, deployments } = hre
 
     const { deploy } = deployments
-    const { deployer } = await getNamedAccounts()
+    const { deployer, owner } = await getNamedAccounts()
 
     assert(deployer, 'Missing named deployer account')
+    assert(owner, 'Missing named owner account')
 
     console.log(`Network: ${hre.network.name}`)
     console.log(`Deployer: ${deployer}`)
+    console.log(`Owner: ${owner}`)
 
     // This is an external deployment pulled in from @layerzerolabs/lz-evm-sdk-v2
     //
@@ -43,10 +45,11 @@ const deploy: DeployFunction = async (hre) => {
 
     const { address } = await deploy(contractName, {
         from: deployer,
+        deterministicDeployment: '0x0000000000000000000000000000000000000000000000000000000000000000',
         args: [
             hre.network.config.oftAdapter.tokenAddress, // token address
             endpointV2Deployment.address, // LayerZero's EndpointV2 address
-            deployer, // owner
+            owner, // owner
         ],
         log: true,
         skipIfAlreadyDeployed: false,
