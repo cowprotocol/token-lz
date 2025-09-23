@@ -22,12 +22,12 @@ import type { OmniPointHardhat } from '@layerzerolabs/toolbox-hardhat'
  */
 const optimismContract: OmniPointHardhat = {
     eid: EndpointId.OPTSEP_V2_TESTNET,
-    contractName: 'MyOFTAdapter',
+    contractName: 'CowOftAdapter',
 }
 
 const arbitrumContract: OmniPointHardhat = {
     eid: EndpointId.ARBSEP_V2_TESTNET,
-    contractName: 'MyOFT',
+    contractName: 'CowOft',
 }
 
 // To connect all the above chains to each other, we need the following pathways:
