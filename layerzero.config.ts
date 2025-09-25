@@ -21,17 +21,17 @@ import type { OmniPointHardhat } from '@layerzerolabs/toolbox-hardhat'
  *     },
  */
 const mainnetContract: OmniPointHardhat = {
-    eid: EndpointId.ETHEREUM_MAINNET,
+    eid: EndpointId.ETHEREUM_V2_MAINNET,
     contractName: 'CowOftAdapter',
 }
 
 const bscContract: OmniPointHardhat = {
-    eid: EndpointId.BSC_MAINNET,
+    eid: EndpointId.BSC_V2_MAINNET,
     contractName: 'CowOft',
 }
 
 const avalancheContract: OmniPointHardhat = {
-    eid: EndpointId.AVALANCHE_MAINNET,
+    eid: EndpointId.AVALANCHE_V2_MAINNET,
     contractName: 'CowOft',
 }
 

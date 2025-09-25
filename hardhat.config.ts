@@ -59,7 +59,7 @@ const config: HardhatUserConfig = {
     },
     networks: {
         'mainnet': {
-            eid: EndpointId.ETHEREUM_MAINNET,
+            eid: EndpointId.ETHEREUM_V2_MAINNET,
             url: process.env.RPC_URL_1 || 'https://mainnet.gateway.tenderly.co',
             accounts,
             oftAdapter: {
@@ -67,12 +67,12 @@ const config: HardhatUserConfig = {
             },
         },
         'bsc-mainnet': {
-            eid: EndpointId.BSC_MAINNET,
+            eid: EndpointId.BSC_V2_MAINNET,
             url: process.env.RPC_URL_56 || 'https://bsc-rpc.publicnode.com',
             accounts,
         },
         'avalanche-mainnet': {
-            eid: EndpointId.AVALANCHE_MAINNET,
+            eid: EndpointId.AVALANCHE_V2_MAINNET,
             url: process.env.RPC_URL_43114 || 'https://avalanche-mainnet.gateway.tenderly.co',
             accounts,
         },
