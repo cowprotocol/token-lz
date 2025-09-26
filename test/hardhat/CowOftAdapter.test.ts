@@ -32,7 +32,7 @@ describe('CowOftAdapter Test', function () {
 
         CowOft = await ethers.getContractFactory('CowOftMock')
 
-        ERC20Mock = await ethers.getContractFactory('CowERC20Mock')
+        ERC20Mock = await ethers.getContractFactory('CowErc20Mock')
 
         // Fetching the first three signers (accounts) from Hardhat's local Ethereum network
         const signers = await ethers.getSigners()
