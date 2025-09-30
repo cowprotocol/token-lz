@@ -25,6 +25,8 @@ const MNEMONIC = process.env.MNEMONIC
 // If you prefer to be authenticated using a private key, set a PRIVATE_KEY environment variable
 const PRIVATE_KEY = process.env.PRIVATE_KEY
 
+const OWNER = process.env.OWNER || '0x423cEc87f19F0778f549846e0801ee267a917935'
+
 const accounts: HttpNetworkAccountsUserConfig | undefined = MNEMONIC
     ? { mnemonic: MNEMONIC }
     : PRIVATE_KEY
@@ -86,7 +88,7 @@ const config: HardhatUserConfig = {
             default: 0, // wallet address of index[0], of the mnemonic in .env
         },
         owner: {
-            default: '0x423cEc87f19F0778f549846e0801ee267a917935', // COW DAO protocol multisig
+            default: OWNER, // COW DAO protocol multisig
         },
     },
 }
