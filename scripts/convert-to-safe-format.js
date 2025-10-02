@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const lz = require('@layerzerolabs/lz-definitions');
 
 if (process.argv.length != 3) {
     console.error('convert-to-safe-format.js -- A script to convert a transaction list from lz:oapp:wire to Safe Transaction Builder format.')
@@ -41,6 +42,7 @@ txns.forEach(txn => {
 // }
 
 Object.keys(txnsByEid).forEach(eid => {
+  const networkName = lz.endpointIdToNetwork(eid);
   const transactions = txnsByEid[eid].map(txn => ({
     to: txn.point.address,
     value: "0",
@@ -51,10 +53,12 @@ Object.keys(txnsByEid).forEach(eid => {
 
   const safeFormat = {
     version: "1.0",
-    chainId: eid,
+    // we set chain id to 0 because LayerZero does not provide a convenient way to convert into its format
+    // see https://docs.layerzero.network/v2/faq#endpoint-id-vs-chain-id
+    chainId: 0,
     createdAt: Date.now(),
     meta: {
-      name: `Transactions for EID ${eid}`,
+      name: `Transactions for ${networkName} (EID ${eid})`,
       description: "LayerZero configuration transactions",
       txBuilderVersion: "1.16.3"
     },
@@ -62,7 +66,7 @@ Object.keys(txnsByEid).forEach(eid => {
   };
 
   // Write to file
-  const filename = `safe-txns-eid-${eid}.json`;
+  const filename = `safe-txns-eid-${networkName}.json`;
   fs.writeFileSync(filename, JSON.stringify(safeFormat, null, 2));
   console.log(`Created ${filename} with ${transactions.length} transactions`);
 });
