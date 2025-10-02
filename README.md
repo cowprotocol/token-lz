@@ -173,8 +173,7 @@ pnpm dlx @layerzerolabs/verify-contract -n <NETWORK_NAME> -u <API_URL> -k <API_K
 
 ### Linting
 ```bash
-pnpm lint          # Check all files
-pnpm lint:fix      # Auto-fix linting issues
+forge fmt          # Fix all files
 ```
 
 Run tests with Foundry and Hardhat:
