@@ -126,11 +126,26 @@ On the `Deployed Contract` line, note the `address` logged (inner token's addres
 In the `hardhat.config.ts` file, add the inner token's address to the network you want to deploy the OFTAdapter to:
 
 ```typescript
-// Replace `0x0` with the address of the ERC20 token you want to adapt to the OFT functionality.
+// Replace `<INNER_TOKEN_ADDRESS>` with the address of the ERC20 token you want to adapt to the OFT functionality.
 oftAdapter: {
     tokenAddress: '<INNER_TOKEN_ADDRESS>',
 }
 ```
+
+### (optional) Set up a Safe as the owner
+
+Go to https://app.safe.global to set up a multi-network Safe multisig to act as the owner of your OFT token's configuration settings. See more information about ownership on [LayerZero's Docs](https://docs.layerzero.network/v2/developers/evm/technical-reference/transfer-ownership).
+
+Once you have an address for your Safe, configure it as a named account in your `hardhat.config.ts` file:
+
+```typescript
+// Replace `<SAFE ADDRESS>` with the address of your DAO protocol multisig.
+owner: {
+    default: '<SAFE ADDRESS>', // DAO protocol multisig
+},
+```
+
+### Deploy the OFT Application
 
 Deploy an OFTAdapter to Optimism Sepolia:
 
@@ -151,10 +166,20 @@ The OFT standard builds on top of the OApp standard, which enables generic messa
 Run the wiring task:
 
 ```bash
-pnpm hardhat lz:oapp:wire --oapp-config layerzero.config.ts
+pnpm hardhat lz:oapp:wire --oapp-config layerzero.config.ts --output-filename txns.json
 ```
 
-Submit all the transactions to complete wiring. After all transactions confirm, your OApps are wired and can send messages to each other.
+It should output a list of transactions to `txns.json` Use the provided conversion script to make the transactions executable on Gnosis Safe:
+
+```bash
+node scripts/convert-to-safe-format.js txns.json
+```
+
+Submit all generated batches to their respective Safes using the Safe Transaction Builder App.
+
+**NOTE:** while staging to the safe transaction builder, you will see a warning about the chain ID not matching. This is normal, and due to LayerZero not providing a good source for the Endpoint ID -> EVM chain ID.
+
+After all transactions confirm, your OApps are wired and can send messages to each other.
 
 ## Sending OFTs
 
