@@ -2,9 +2,9 @@
 pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
-import { SimpleDVNMock } from "../../contracts/mocks/SimpleDVNMock.sol";
-import { IReceiveUlnE2 } from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/interfaces/IReceiveUlnE2.sol";
-import { ILayerZeroDVN } from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/interfaces/ILayerZeroDVN.sol";
+import {SimpleDVNMock} from "../../contracts/mocks/SimpleDVNMock.sol";
+import {IReceiveUlnE2} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/interfaces/IReceiveUlnE2.sol";
+import {ILayerZeroDVN} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/interfaces/ILayerZeroDVN.sol";
 
 // Minimal mock for IReceiveUlnE2
 contract MockReceiveUln is IReceiveUlnE2 {
@@ -75,9 +75,8 @@ contract SimpleDVNMockTest is Test {
     // Test core business logic - verify function
     function test_verify_success() public {
         bytes32 localOAppB32 = bytes32(uint256(uint160(LOCAL_OAPP)));
-        bytes32 expectedGuid = keccak256(
-            abi.encodePacked(SAMPLE_NONCE, REMOTE_EID, REMOTE_OAPP, LOCAL_EID, localOAppB32)
-        );
+        bytes32 expectedGuid =
+            keccak256(abi.encodePacked(SAMPLE_NONCE, REMOTE_EID, REMOTE_OAPP, LOCAL_EID, localOAppB32));
 
         vm.expectEmit(true, false, false, false);
         emit PayloadVerified(expectedGuid);
@@ -91,9 +90,8 @@ contract SimpleDVNMockTest is Test {
     // Test core business logic - commit function
     function test_commit_success() public {
         bytes32 localOAppB32 = bytes32(uint256(uint160(LOCAL_OAPP)));
-        bytes32 expectedGuid = keccak256(
-            abi.encodePacked(SAMPLE_NONCE, REMOTE_EID, REMOTE_OAPP, LOCAL_EID, localOAppB32)
-        );
+        bytes32 expectedGuid =
+            keccak256(abi.encodePacked(SAMPLE_NONCE, REMOTE_EID, REMOTE_OAPP, LOCAL_EID, localOAppB32));
 
         vm.expectEmit(true, false, false, false);
         emit PayloadCommitted(expectedGuid);

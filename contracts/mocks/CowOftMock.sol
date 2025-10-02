@@ -6,9 +6,7 @@ import {CowOft} from "../CowOft.sol";
 
 // @dev WARNING: This is for testing purposes only
 contract CowOftMock is CowOft {
-    constructor(address _lzEndpoint, address _delegate)
-        CowOft(_lzEndpoint, _delegate)
-    {}
+    constructor(address _lzEndpoint, address _delegate) CowOft(_lzEndpoint, _delegate) {}
 
     function mint(address _to, uint256 _amount) public {
         _mint(_to, _amount);

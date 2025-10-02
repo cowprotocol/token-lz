@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 pragma solidity ^0.8.30;
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { OFTAdapter } from "@layerzerolabs/oft-evm/contracts/OFTAdapter.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {OFTAdapter} from "@layerzerolabs/oft-evm/contracts/OFTAdapter.sol";
 
 /**
  * @title OFTAdapter Contract
@@ -16,9 +16,8 @@ import { OFTAdapter } from "@layerzerolabs/oft-evm/contracts/OFTAdapter.sol";
  * a pre/post balance check will need to be done to calculate the amountSentLD/amountReceivedLD.
  */
 contract CowOftAdapter is OFTAdapter {
-    constructor(
-        address _token,
-        address _lzEndpoint,
-        address _delegate
-    ) OFTAdapter(_token, _lzEndpoint, _delegate) Ownable(_delegate) {}
+    constructor(address _token, address _lzEndpoint, address _delegate)
+        OFTAdapter(_token, _lzEndpoint, _delegate)
+        Ownable(_delegate)
+    {}
 }

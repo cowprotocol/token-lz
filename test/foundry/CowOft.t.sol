@@ -54,17 +54,11 @@ contract CowOftTest is TestHelperOz5, EIP712 {
         setUpEndpoints(2, LibraryType.UltraLightNode);
 
         vm.startPrank(address(1234));
-        aOFT = CowOftMock(
-            _deployOApp(
-                type(CowOftMock).creationCode, abi.encode(address(endpoints[aEid]), address(this))
-            )
-        );
+        aOFT =
+            CowOftMock(_deployOApp(type(CowOftMock).creationCode, abi.encode(address(endpoints[aEid]), address(this))));
 
-        bOFT = CowOftMock(
-            _deployOApp(
-                type(CowOftMock).creationCode, abi.encode(address(endpoints[bEid]), address(this))
-            )
-        );
+        bOFT =
+            CowOftMock(_deployOApp(type(CowOftMock).creationCode, abi.encode(address(endpoints[bEid]), address(this))));
         vm.stopPrank();
 
         // config and wire the ofts
@@ -93,6 +87,25 @@ contract CowOftTest is TestHelperOz5, EIP712 {
 
         assertEq(aOFT.symbol(), "COW");
         assertEq(bOFT.symbol(), "COW");
+
+        assertEq(address(aOFT.endpoint()), endpoints[aEid]);
+        assertEq(address(bOFT.endpoint()), endpoints[bEid]);
+
+        (
+            ,
+            string memory name,
+            string memory version,
+            uint256 chainId,
+            address verifyingContract,
+            bytes32 salt,
+            uint256[] memory extensions
+        ) = aOFT.eip712Domain();
+        assertEq(name, "CoW Protocol Token");
+        assertEq(version, "1");
+        assertEq(chainId, 31337);
+        assertEq(verifyingContract, address(aOFT));
+        assertEq(salt, bytes32(0));
+        assertEq(extensions, new uint256[](0));
     }
 
     function test_send_oft() public {

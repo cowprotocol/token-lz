@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { IReceiveUlnE2 } from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/interfaces/IReceiveUlnE2.sol";
-import { ILayerZeroDVN } from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/interfaces/ILayerZeroDVN.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IReceiveUlnE2} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/interfaces/IReceiveUlnE2.sol";
+import {ILayerZeroDVN} from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln/interfaces/ILayerZeroDVN.sol";
 
 // A message on the destination chain has to go through three steps:
 // 1. verify -> 2. commit -> 3. execute
@@ -15,6 +15,7 @@ import { ILayerZeroDVN } from "@layerzerolabs/lz-evm-messagelib-v2/contracts/uln
  */
 contract SimpleDVNMock is Ownable, ILayerZeroDVN {
     error InvalidLocalEid(uint32 expected, uint32 got);
+
     event PayloadVerified(bytes32 indexed guid);
     event PayloadCommitted(bytes32 indexed guid);
 
@@ -41,12 +42,13 @@ contract SimpleDVNMock is Ownable, ILayerZeroDVN {
      * @notice Get the DVN fee (mock implementation)
      * @dev Returns a minimal fee for testing purposes. You can override this function to return a different fee or to implement a fee mechanism.
      */
-    function getFee(
-        uint32 _dstEid,
-        uint64 _confirmations,
-        address _sender,
-        bytes calldata _options
-    ) external pure virtual override returns (uint256 fee) {
+    function getFee(uint32 _dstEid, uint64 _confirmations, address _sender, bytes calldata _options)
+        external
+        pure
+        virtual
+        override
+        returns (uint256 fee)
+    {
         // Suppress unused parameter warnings
         (_dstEid, _confirmations, _sender, _options);
         // Return 0 fee for testing
@@ -57,10 +59,13 @@ contract SimpleDVNMock is Ownable, ILayerZeroDVN {
      * @notice Assign job and return DVN fee (mock implementation)
      * @dev Returns a minimal fee and doesn't actually assign any job. You can override this function to return a different fee or to implement a fee mechanism.
      */
-    function assignJob(
-        AssignJobParam calldata _param,
-        bytes calldata _options
-    ) external payable virtual override returns (uint256 fee) {
+    function assignJob(AssignJobParam calldata _param, bytes calldata _options)
+        external
+        payable
+        virtual
+        override
+        returns (uint256 fee)
+    {
         // Suppress unused parameter warnings
         (_param, _options);
         // Return 0 fee for testing
@@ -107,9 +112,7 @@ contract SimpleDVNMock is Ownable, ILayerZeroDVN {
          *    We pass confirmations=1 to finalize immediately once our DVN signs.
          */
         receiveUln.verify(
-            _encodeHeader(_nonce, _srcEid, _remoteOApp, _dstEid, localOAppB32),
-            _encodePayloadHash(_guid, _message),
-            1
+            _encodeHeader(_nonce, _srcEid, _remoteOApp, _dstEid, localOAppB32), _encodePayloadHash(_guid, _message), 1
         );
         // Emit event for successful verification
         emit PayloadVerified(_guid);
@@ -153,8 +156,7 @@ contract SimpleDVNMock is Ownable, ILayerZeroDVN {
          */
 
         receiveUln.commitVerification(
-            _encodeHeader(_nonce, _srcEid, _remoteOApp, _dstEid, localOAppB32),
-            _encodePayloadHash(_guid, _message)
+            _encodeHeader(_nonce, _srcEid, _remoteOApp, _dstEid, localOAppB32), _encodePayloadHash(_guid, _message)
         );
         // Emit event for successful commit
         emit PayloadCommitted(_guid);
@@ -163,6 +165,7 @@ contract SimpleDVNMock is Ownable, ILayerZeroDVN {
      * @dev Encodes packet header.
      * Works on arbitrary bytes32 sender/receiver values.
      */
+
     function _encodeHeader(
         uint64 _nonce,
         uint32 _srcEid, // _srcEid
@@ -183,13 +186,11 @@ contract SimpleDVNMock is Ownable, ILayerZeroDVN {
     /**
      * @dev Encodes ULN-302 GUID.
      */
-    function _encodeGuid(
-        uint64 _nonce,
-        uint32 _srcEid,
-        bytes32 _sender,
-        uint32 _dstEid,
-        bytes32 _receiver
-    ) internal pure returns (bytes32) {
+    function _encodeGuid(uint64 _nonce, uint32 _srcEid, bytes32 _sender, uint32 _dstEid, bytes32 _receiver)
+        internal
+        pure
+        returns (bytes32)
+    {
         return keccak256(abi.encodePacked(_nonce, _srcEid, _sender, _dstEid, _receiver));
     }
 }
