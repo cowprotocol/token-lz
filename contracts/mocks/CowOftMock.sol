@@ -6,7 +6,7 @@ import {CowOft} from "../CowOft.sol";
 
 // @dev WARNING: This is for testing purposes only
 contract CowOftMock is CowOft {
-    constructor(string memory _name, string memory _symbol, address _lzEndpoint, address _delegate)
+    constructor(address _lzEndpoint, address _delegate)
         CowOft(_lzEndpoint, _delegate)
     {}
 

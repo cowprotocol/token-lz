@@ -50,8 +50,8 @@ describe('CowOft Test', function () {
         mockEndpointV2B = await EndpointV2Mock.deploy(eidB)
 
         // Deploying two instances of CowOft contract with different identifiers and linking them to the mock LZEndpoint
-        myOFTA = await CowOft.deploy('aOFT', 'aOFT', mockEndpointV2A.address, ownerA.address)
-        myOFTB = await CowOft.deploy('bOFT', 'bOFT', mockEndpointV2B.address, ownerB.address)
+        myOFTA = await CowOft.deploy(mockEndpointV2A.address, ownerA.address)
+        myOFTB = await CowOft.deploy(mockEndpointV2B.address, ownerB.address)
 
         // Setting destination endpoints in the LZEndpoint mock for each CowOft instance
         await mockEndpointV2A.setDestLzEndpoint(myOFTB.address, mockEndpointV2B.address)

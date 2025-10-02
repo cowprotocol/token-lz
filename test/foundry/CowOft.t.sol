@@ -53,17 +53,19 @@ contract CowOftTest is TestHelperOz5, EIP712 {
         super.setUp();
         setUpEndpoints(2, LibraryType.UltraLightNode);
 
+        vm.startPrank(address(1234));
         aOFT = CowOftMock(
             _deployOApp(
-                type(CowOftMock).creationCode, abi.encode("aOFT", "aOFT", address(endpoints[aEid]), address(this))
+                type(CowOftMock).creationCode, abi.encode(address(endpoints[aEid]), address(this))
             )
         );
 
         bOFT = CowOftMock(
             _deployOApp(
-                type(CowOftMock).creationCode, abi.encode("bOFT", "bOFT", address(endpoints[bEid]), address(this))
+                type(CowOftMock).creationCode, abi.encode(address(endpoints[bEid]), address(this))
             )
         );
+        vm.stopPrank();
 
         // config and wire the ofts
         address[] memory ofts = new address[](2);
@@ -85,6 +87,12 @@ contract CowOftTest is TestHelperOz5, EIP712 {
 
         assertEq(aOFT.token(), address(aOFT));
         assertEq(bOFT.token(), address(bOFT));
+
+        assertEq(aOFT.name(), "CoW Protocol Token");
+        assertEq(bOFT.name(), "CoW Protocol Token");
+
+        assertEq(aOFT.symbol(), "COW");
+        assertEq(bOFT.symbol(), "COW");
     }
 
     function test_send_oft() public {

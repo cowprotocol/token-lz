@@ -83,6 +83,9 @@ contract CowOftAdapterTest is TestHelperOz5 {
 
         assertEq(aOFTAdapter.token(), address(aToken));
         assertEq(bOFT.token(), address(bOFT));
+
+        assertEq(bOFT.name(), "Token");
+        assertEq(bOFT.symbol(), "TOKEN");
     }
 
     function test_send_oft_adapter() public {
