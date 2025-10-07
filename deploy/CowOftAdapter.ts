@@ -2,18 +2,20 @@ import assert from 'assert'
 
 import { type DeployFunction } from 'hardhat-deploy/types'
 
-const contractName = 'MyOFT'
+const contractName = 'CowOftAdapter'
 
 const deploy: DeployFunction = async (hre) => {
     const { getNamedAccounts, deployments } = hre
 
     const { deploy } = deployments
-    const { deployer } = await getNamedAccounts()
+    const { deployer, owner } = await getNamedAccounts()
 
     assert(deployer, 'Missing named deployer account')
+    assert(owner, 'Missing named owner account')
 
     console.log(`Network: ${hre.network.name}`)
     console.log(`Deployer: ${deployer}`)
+    console.log(`Owner: ${owner}`)
 
     // This is an external deployment pulled in from @layerzerolabs/lz-evm-sdk-v2
     //
@@ -33,20 +35,21 @@ const deploy: DeployFunction = async (hre) => {
     // }
     const endpointV2Deployment = await hre.deployments.get('EndpointV2')
 
-    // If the oftAdapter configuration is defined on a network that is deploying an OFT,
-    // the deployment will log a warning and skip the deployment
-    if (hre.network.config.oftAdapter != null) {
-        console.warn(`oftAdapter configuration found on OFT deployment, skipping OFT deployment`)
+    // The token address must be defined in hardhat.config.ts
+    // If the token address is not defined, the deployment will log a warning and skip the deployment
+    if (hre.network.config.oftAdapter == null) {
+        console.warn(`oftAdapter not configured on network config, skipping OFTWrapper deployment`)
+
         return
     }
 
     const { address } = await deploy(contractName, {
         from: deployer,
+        deterministicDeployment: '0x0000000000000000000000000000000000000000000000000000000000000000',
         args: [
-            'MyOFT', // name
-            'MOFT', // symbol
+            hre.network.config.oftAdapter.tokenAddress, // token address
             endpointV2Deployment.address, // LayerZero's EndpointV2 address
-            deployer, // owner
+            owner, // owner
         ],
         log: true,
         skipIfAlreadyDeployed: false,

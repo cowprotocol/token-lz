@@ -5,16 +5,16 @@
 // - Fill in the environment variables
 import 'dotenv/config'
 
-import 'hardhat-deploy'
-import 'hardhat-contract-sizer'
-import '@nomiclabs/hardhat-ethers'
 import '@layerzerolabs/toolbox-hardhat'
+import '@nomiclabs/hardhat-ethers'
+import 'hardhat-contract-sizer'
+import 'hardhat-deploy'
 import { HardhatUserConfig, HttpNetworkAccountsUserConfig } from 'hardhat/types'
 
 import { EndpointId } from '@layerzerolabs/lz-definitions'
 
-import './type-extensions'
 import './tasks/sendOFT'
+import './type-extensions'
 
 // Set your preferred authentication method
 //
@@ -24,6 +24,8 @@ const MNEMONIC = process.env.MNEMONIC
 
 // If you prefer to be authenticated using a private key, set a PRIVATE_KEY environment variable
 const PRIVATE_KEY = process.env.PRIVATE_KEY
+
+const OWNER = process.env.OWNER || '0x423cEc87f19F0778f549846e0801ee267a917935'
 
 const accounts: HttpNetworkAccountsUserConfig | undefined = MNEMONIC
     ? { mnemonic: MNEMONIC }
@@ -44,8 +46,11 @@ const config: HardhatUserConfig = {
     solidity: {
         compilers: [
             {
-                version: '0.8.22',
+                version: '0.8.30',
                 settings: {
+                    // required because the number of internal parameters for the CowOft contract is very high,
+                    // and there is no practical way to reduce
+                    viaIR: true,
                     optimizer: {
                         enabled: true,
                         runs: 200,
@@ -55,17 +60,22 @@ const config: HardhatUserConfig = {
         ],
     },
     networks: {
-        'optimism-testnet': {
-            eid: EndpointId.OPTSEP_V2_TESTNET,
-            url: process.env.RPC_URL_OP_SEPOLIA || 'https://optimism-sepolia.gateway.tenderly.co',
+        'mainnet': {
+            eid: EndpointId.ETHEREUM_V2_MAINNET,
+            url: process.env.RPC_URL_1 || 'https://mainnet.gateway.tenderly.co',
             accounts,
             oftAdapter: {
-                tokenAddress: '0x0', // Set the token address for the OFT adapter
+                tokenAddress: '0xDEf1CA1fb7FBcDC777520aa7f396b4E015F497aB', // Set the token address for the OFT adapter
             },
         },
-        'arbitrum-testnet': {
-            eid: EndpointId.ARBSEP_V2_TESTNET,
-            url: process.env.RPC_URL_ARB_SEPOLIA || 'https://arbitrum-sepolia.gateway.tenderly.co',
+        'bsc-mainnet': {
+            eid: EndpointId.BSC_V2_MAINNET,
+            url: process.env.RPC_URL_56 || 'https://bsc-rpc.publicnode.com',
+            accounts,
+        },
+        'avalanche-mainnet': {
+            eid: EndpointId.AVALANCHE_V2_MAINNET,
+            url: process.env.RPC_URL_43114 || 'https://avalanche-mainnet.gateway.tenderly.co',
             accounts,
         },
         hardhat: {
@@ -76,6 +86,9 @@ const config: HardhatUserConfig = {
     namedAccounts: {
         deployer: {
             default: 0, // wallet address of index[0], of the mnemonic in .env
+        },
+        owner: {
+            default: OWNER, // COW DAO protocol multisig
         },
     },
 }
