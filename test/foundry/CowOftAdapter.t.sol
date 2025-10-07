@@ -73,7 +73,7 @@ contract CowOftAdapterTest is TestHelperOz5 {
         aToken.mint(userA, initialBalance);
     }
 
-    function test_constructor() public {
+    function test_constructor() public view {
         assertEq(aOFTAdapter.owner(), address(this));
         assertEq(bOFT.owner(), address(this));
 
