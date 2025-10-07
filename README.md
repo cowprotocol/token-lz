@@ -66,7 +66,7 @@ pnpm compile:hardhat
 
 ### 1. Configure Token Address
 
-In `hardhat.config.ts`, set the token address for the OFTAdapter on the origin chain:
+In `hardhat.config.ts`, set the token address for the OFTAdapter on the origin chain. `<INNER_TOKEN_ADDRESS>` should be replaced with the native address of your token on its main network (which, in the case of CoW, is [`0xDEf1CA1fb7FBcDC777520aa7f396b4E015F497aB`](https://docs.cow.fi/governance/token) on mainnet):
 
 ```typescript
 oftAdapter: {
@@ -86,14 +86,14 @@ owner: {
 
 ### 3. Deploy Contracts
 
-Deploy the OFTAdapter on the origin chain:
+Deploy the OFTAdapter on the origin chain (which, in CoW's case, is mainnet):
 ```bash
-pnpm hardhat lz:deploy --tags MyOFTAdapter --networks <origin-network>
+pnpm hardhat lz:deploy --tags CowOftAdapter --networks mainnet
 ```
 
-Deploy OFT contracts on destination chains:
+Deploy OFT contracts on destination chains. You can find a list of chains to deploy on, or add your own, in `hardhat.config.ts`:
 ```bash
-pnpm hardhat lz:deploy --tags MyOFT --networks <destination-network>
+pnpm hardhat lz:deploy --tags CowOft --networks <destination-network>
 ```
 
 ### 4. Wire the Contracts
@@ -108,9 +108,9 @@ Convert transactions to Safe format:
 node scripts/convert-to-safe-format.js txns.json
 ```
 
-A series of files will be created in your project folder for transactions to execute on each network. Execute the generated batches through Safe Transaction Builder.
+A series of files will be created in your project folder for transactions to execute on each network. Stage and Execute the generated batches through (Safe Transaction Builder)[https://app.safe.global/apps/open?appUrl=https%3A%2F%2Fapps-portal.safe.global%2Ftx-builder].
 
-**Note:** Chain ID warnings in Safe Transaction Builder are expected due to an issue with LayerZero's providing of EVM chain ID mapping. Please be careful to double check the network when uploading.
+**Note:** When deploying in the Safe Transaction Builder, you may see a warning about the uploaded JSON file having invalid chain ID. These errors are expected due to an issue with LayerZero's providing of EVM chain ID mapping, and can be safely ignored. With this in mind, Please be careful to double check the network when uploading.
 
 ## Configuration
 
@@ -119,6 +119,8 @@ Edit `layerzero.config.ts` to configure:
 - DVN (Data Verification Network) settings
 - Gas limits and enforced options
 - Block confirmations
+
+You can find more information about layerzero.config.ts on [LayerZero's website](https://docs.layerzero.network/v2/get-started/create-lz-oapp/project-config#3-add-the-new-contract-and-connections-to-layerzeroconfigts).
 
 Key configuration parameters:
 ```typescript
@@ -146,17 +148,9 @@ pnpm test:hardhat      # Run Hardhat tests
 pnpm hardhat lz:deploy --tags <TAG> --networks <NETWORK>
 ```
 
-### Configuration Management
-```bash
-# View current configuration
-pnpm hardhat lz:oapp:config:get --oapp-config layerzero.config.ts
+`<TAG>` should be `CowOft` or `CowOftAdapter`, depending on which contract should be deployed on the current network.
 
-# Wire contracts (generate transactions)
-pnpm hardhat lz:oapp:wire --oapp-config layerzero.config.ts --output-filename txns.json
-
-# Convert to Safe format
-node scripts/convert-to-safe-format.js txns.json
-```
+`<NETWORK>` should be a declared hardhat network name in `hardhat.config.ts`.
 
 ### Sending Tokens
 
