@@ -1,63 +1,37 @@
-<p align="center">
-  <a href="https://layerzero.network">
-    <img alt="LayerZero" style="width: 400px" src="https://docs.layerzero.network/img/LayerZero_Logo_Black.svg"/>
-  </a>
-</p>
+# CoW Swap Omnichain Fungible Token (OFT)
 
-<p align="center">
- <a href="https://docs.layerzero.network/" style="color: #a77dff">LayerZero Docs</a>
-</p>
+This project provides an implementation for the CoW Protocol Token (COW) using LayerZero's OFT standard.
 
-<h1 align="center">OFT Adapter Example</h1>
+---
 
-<p align="center">Template project for converting an existing token into a cross-chain token (<a href="https://docs.layerzero.network/v2/concepts/applications/oft-standard">OFT</a>) using the LayerZero protocol. This example's config involves EVM chains, but the same OFT can be extended to involve other VM chains such as Solana, Aptos and Hyperliquid.</p>
+### Key Contracts
 
-## Table of Contents
+* **OFT Adapter**: This implementation uses a **lock-and-unlock** mechanism for cross-chain transfers, treating the already-deployed native COW token on Ethereum Mainnet as the "inner token" and wrapping it for use on other chains. This contract is only deployed on Ethereum Mainnet.
+* **OFT Token**: An "Omnichain Fungible Token" from LayerZero, operating on LayerZero's OApp standard, which is a generalized messaging protocol for secure cross-chain communication. This is deployed on every other chain as an ERC20.
 
-- [Prerequisite Knowledge](#prerequisite-knowledge)
-- [Introduction](#introduction)
-- [Requirements](#requirements)
-- [Scaffold this example](#scaffold-this-example)
-- [Helper Tasks](#helper-tasks)
-- [Setup](#setup)
-- [Build](#build)
-  - [Compiling your contracts](#compiling-your-contracts)
-- [Deploy](#deploy)
-- [Enable Messaging](#enable-messaging)
-- [Sending OFTs](#sending-ofts)
-- [Next Steps](#next-steps)
-- [Production Deployment Checklist](#production-deployment-checklist)
-  - [Profiling `lzReceive` and `lzCompose` Gas Usage](#profiling-lzreceive-and-lzcompose-gas-usage)
-  - [Available Commands](#available-commands)
-    - [`lzReceive`](#lzreceive)
-    - [`lzCompose`](#lzcompose)
-  - [Usage Examples](#usage-examples)
-  - [Notes](#notes)
-- [Appendix](#appendix)
-  - [Running Tests](#running-tests)
-  - [Adding other chains](#adding-other-chains)
-  - [Using Multisigs](#using-multisigs)
-  - [LayerZero Hardhat Helper Tasks](#layerzero-hardhat-helper-tasks)
-  - [Manual Configuration](#manual-configuration)
-  - [Contract Verification](#contract-verification)
-  - [Troubleshooting](#troubleshooting)
+---
 
-## Prerequisite Knowledge
+### Core Commands
 
-- [What is an OFT (Omnichain Fungible Token) ?](https://docs.layerzero.network/v2/concepts/applications/oft-standard)
-- [What is an OApp (Omnichain Application) ?](https://docs.layerzero.network/v2/concepts/applications/oapp-standard)
+* `pnpm install`: Installs project dependencies.
+* `pnpm compile`: Compiles all contracts.
+* `pnpm test`: Runs all tests.
+* `pnpm hardhat lz:deploy --tags <contractName> --networks <networkName>`: Deploys a specific contract to a network.
+* `pnpm hardhat lz:oapp:wire --oapp-config layerzero.config.ts`: Wires the deployed OFT contracts for cross-chain messaging.
+* `pnpm hardhat lz:oft:send --src-eid <sourceEid> --dst-eid <destinationEid> --amount <amount> --to <address>`: Sends OFT tokens to a destination chain.
 
-## Introduction
+---
 
-**OFT Adapter** - while a regular OFT uses the mint/burn mechanism, an OFT adapter uses lock/unlock. The OFT Adapter contract functions as a lockbox for the existing token (referred to as the _inner token_). Given the inner token's chain, transfers to outside the inner token's chain will require locking and transfers to the inner token's chain will result in unlocking.
+### Supported Networks
 
-<!-- TODO: remove this Introduction after having a page/section specifically on OFT Adapter that we can link to under Prerequisite Knowledge -->
+| Network Name | Endpoint ID | Deployed Contract
+| :--- | :--- |
+| **Ethereum Mainnet** | `30101` | CowOftAdapter
+| **BNB Smart Chain (BSC) Mainnet** | `30102` | CowOft
 
-## Requirements
+---
 
-- `Node.js` - ` >=18.16.0`
-- `pnpm` (recommended) - or another package manager of your choice (npm, yarn)
-- `forge` (optional) - `>=0.2.0` for testing, and if not using Hardhat for compilation
+### Important References
 
 ## Scaffold this example
 
