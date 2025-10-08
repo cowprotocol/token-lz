@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-pragma solidity ^0.8.20;
+pragma solidity 0.8.30;
 
 import "forge-std/Test.sol";
 import {SimpleDVNMock} from "../../contracts/mocks/SimpleDVNMock.sol";

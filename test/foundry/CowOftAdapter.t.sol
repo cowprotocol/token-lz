@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-pragma solidity ^0.8.20;
+pragma solidity 0.8.30;
 
 // Mock imports
 import {OFTMock} from "../mocks/OFTMock.sol";
@@ -158,4 +158,5 @@ contract CowOftAdapterTest is TestHelperOz5 {
     }
 
     // TODO import the rest of oft tests?
+    // REVIEW: remove? ^^
 }
