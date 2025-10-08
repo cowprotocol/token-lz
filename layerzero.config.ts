@@ -57,7 +57,7 @@ const EVM_ENFORCED_OPTIONS: OAppEnforcedOption[] = [
     {
         msgType: 1,
         optionType: ExecutorOptionType.LZ_RECEIVE,
-        gas: 80000,
+        gas: 80000, // REVIEW: is this value valid for permit flow or it has nothing to do?
         value: 0,
     },
 ]
