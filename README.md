@@ -59,17 +59,11 @@
 - `pnpm` (recommended) - or another package manager of your choice (npm, yarn)
 - `forge` (optional) - `>=0.2.0` for testing, and if not using Hardhat for compilation
 
-## Scaffold this example
-
-Create your local copy of this example:
+## Installing dependencies
 
 ```bash
-pnpm dlx create-lz-oapp@latest --example oft-adapter
+pnpm install
 ```
-
-Specify the directory, select `OFTAdapter` and proceed with the installation.
-
-Note that `create-lz-oapp` will also automatically run the dependencies install step for you.
 
 ## Helper Tasks
 
@@ -354,25 +348,9 @@ pnpm hardhat lz:oapp:wire --oapp-config layerzero.config.ts
 
 ## Using Multisigs
 
-The wiring task supports the usage of Safe Multisigs.
+The wiring task supports the usage of Safe Multisigs but it doesn't work.
+Instead we are going to export a json file and do the tx through a script.
 
-To use a Safe multisig as the signer for these transactions, add the following to each network in your `hardhat.config.ts` and add the `--safe` flag to `lz:oapp:wire --safe`:
-
-```typescript
-// hardhat.config.ts
-
-networks: {
-  // Include configurations for other networks as needed
-  fuji: {
-    /* ... */
-    // Network-specific settings
-    safeConfig: {
-      safeUrl: 'http://something', // URL of the Safe API, not the Safe itself
-      safeAddress: 'address'
-    }
-  }
-}
-```
 
 ## LayerZero Hardhat Helper Tasks
 
@@ -417,10 +395,25 @@ Generate wiring transactions:
 pnpm hardhat lz:oapp:wire --oapp-config layerzero.config.ts --output-filename txns.json
 ```
 
+When running the cmd you will get the following questions:
+
+a) ✔ Would you like to preview the transactions before continuing? … no
+b) ✔ Would you like to submit the required transactions? … no
+
 Convert transactions to Safe format:
 ```bash
 node scripts/convert-to-safe-format.js txns.json
 ```
+
+This will generate one json per network and the output should look like this:
+
+```bash
+Created safe-txns-eid-ethereum-mainnet.json with 9 transactions
+Created safe-txns-eid-bsc-mainnet.json with 9 transactions
+Created safe-txns-eid-avalanche-mainnet.json with 9 transactions
+```
+
+
 
 A series of files will be created in your project folder for transactions to execute on each network. Stage and Execute the generated batches through (Safe Transaction Builder)[https://app.safe.global/apps/open?appUrl=https%3A%2F%2Fapps-portal.safe.global%2Ftx-builder].
 
