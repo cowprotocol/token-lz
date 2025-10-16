@@ -5,20 +5,17 @@ import { deployments, ethers } from 'hardhat'
 
 import { Options } from '@layerzerolabs/lz-v2-utilities'
 
-describe('CowOftAdapter Test', function () {
+describe('CowOft Test', function () {
     // Constant representing a mock Endpoint ID for testing purposes
     const eidA = 1
     const eidB = 2
     // Declaration of variables to be used in the test suite
-    let CowOftAdapter: ContractFactory
     let CowOft: ContractFactory
-    let ERC20Mock: ContractFactory
     let EndpointV2Mock: ContractFactory
     let ownerA: SignerWithAddress
     let ownerB: SignerWithAddress
     let endpointOwner: SignerWithAddress
-    let token: Contract
-    let myOFTAdapter: Contract
+    let myOFTA: Contract
     let myOFTB: Contract
     let mockEndpointV2A: Contract
     let mockEndpointV2B: Contract
@@ -28,11 +25,7 @@ describe('CowOftAdapter Test', function () {
         // Contract factory for our tested contract
         //
         // We are using a derived contract that exposes a mint() function for testing purposes
-        CowOftAdapter = await ethers.getContractFactory('CowOftAdapterMock')
-
         CowOft = await ethers.getContractFactory('CowOftMock')
-
-        ERC20Mock = await ethers.getContractFactory('ERC20Mock')
 
         // Fetching the first three signers (accounts) from Hardhat's local Ethereum network
         const signers = await ethers.getSigners()
@@ -56,26 +49,24 @@ describe('CowOftAdapter Test', function () {
         mockEndpointV2A = await EndpointV2Mock.deploy(eidA)
         mockEndpointV2B = await EndpointV2Mock.deploy(eidB)
 
-        token = await ERC20Mock.deploy('Token', 'TOKEN')
-
         // Deploying two instances of CowOft contract with different identifiers and linking them to the mock LZEndpoint
-        myOFTAdapter = await CowOftAdapter.deploy(token.address, mockEndpointV2A.address, ownerA.address)
+        myOFTA = await CowOft.deploy(mockEndpointV2A.address, ownerA.address)
         myOFTB = await CowOft.deploy(mockEndpointV2B.address, ownerB.address)
 
         // Setting destination endpoints in the LZEndpoint mock for each CowOft instance
         await mockEndpointV2A.setDestLzEndpoint(myOFTB.address, mockEndpointV2B.address)
-        await mockEndpointV2B.setDestLzEndpoint(myOFTAdapter.address, mockEndpointV2A.address)
+        await mockEndpointV2B.setDestLzEndpoint(myOFTA.address, mockEndpointV2A.address)
 
         // Setting each CowOft instance as a peer of the other in the mock LZEndpoint
-        await myOFTAdapter.connect(ownerA).setPeer(eidB, ethers.utils.zeroPad(myOFTB.address, 32))
-        await myOFTB.connect(ownerB).setPeer(eidA, ethers.utils.zeroPad(myOFTAdapter.address, 32))
+        await myOFTA.connect(ownerA).setPeer(eidB, ethers.utils.zeroPad(myOFTB.address, 32))
+        await myOFTB.connect(ownerB).setPeer(eidA, ethers.utils.zeroPad(myOFTA.address, 32))
     })
 
     // A test case to verify token transfer functionality
-    it('should send a token from A address to B address via OFTAdapter/OFT', async function () {
+    it('should send a token from A address to B address via each OFT', async function () {
         // Minting an initial amount of tokens to ownerA's address in the myOFTA contract
         const initialAmount = ethers.utils.parseEther('100')
-        await token.mint(ownerA.address, initialAmount)
+        await myOFTA.mint(ownerA.address, initialAmount)
 
         // Defining the amount of tokens to send and constructing the parameters for the send operation
         const tokensToSend = ethers.utils.parseEther('1')
@@ -94,22 +85,17 @@ describe('CowOftAdapter Test', function () {
         ]
 
         // Fetching the native fee for the token send operation
-        const [nativeFee] = await myOFTAdapter.quoteSend(sendParam, false)
-
-        // Approving the native fee to be spent by the myOFTA contract
-        await token.connect(ownerA).approve(myOFTAdapter.address, tokensToSend)
+        const [nativeFee] = await myOFTA.quoteSend(sendParam, false)
 
         // Executing the send operation from myOFTA contract
-        await myOFTAdapter.send(sendParam, [nativeFee, 0], ownerA.address, { value: nativeFee })
+        await myOFTA.send(sendParam, [nativeFee, 0], ownerA.address, { value: nativeFee })
 
         // Fetching the final token balances of ownerA and ownerB
-        const finalBalanceA = await token.balanceOf(ownerA.address)
-        const finalBalanceAdapter = await token.balanceOf(myOFTAdapter.address)
+        const finalBalanceA = await myOFTA.balanceOf(ownerA.address)
         const finalBalanceB = await myOFTB.balanceOf(ownerB.address)
 
         // Asserting that the final balances are as expected after the send operation
         expect(finalBalanceA).eql(initialAmount.sub(tokensToSend))
-        expect(finalBalanceAdapter).eql(tokensToSend)
         expect(finalBalanceB).eql(tokensToSend)
     })
 })
