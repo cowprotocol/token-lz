@@ -71,7 +71,11 @@ for (let i = 0;i < networks.length;i++) {
         pathways.push([
             networks[i].contract,
             networks[j].contract,
-            [['LayerZero Labs'], []], // [ requiredDVN[], [ optionalDVN[], threshold ] ]
+            [[], [[
+                'LayerZero Labs',
+                'Canary',
+                'Deutsche Telekom'
+            ], 2]], // [ requiredDVN[], [ optionalDVN[], threshold ] ]
             [networks[i].confirmations, networks[j].confirmations], // [A to B confirmations, B to A confirmations]
             [EVM_ENFORCED_OPTIONS, EVM_ENFORCED_OPTIONS], // Chain B enforcedOptions, Chain A enforcedOptions
         ])
