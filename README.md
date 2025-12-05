@@ -78,17 +78,7 @@ oftAdapter: {
 }
 ```
 
-### 2. (optional) Configure Multisig Owner
-
-Set up a Safe multisig at [https://app.safe.global](https://app.safe.global) and configure it in `hardhat.config.ts`:
-
-```typescript
-owner: {
-    default: '<SAFE_ADDRESS>', // CoW DAO multisig
-},
-```
-
-### 3. Deploy Contracts
+### 2. Deploy Contracts
 
 Deploy the OFTAdapter on the origin chain (which, in CoW's case, is mainnet):
 ```bash
@@ -182,6 +172,16 @@ const EVM_ENFORCED_OPTIONS: OAppEnforcedOption[] = [
         value: 0,
     },
 ]
+```
+
+### Updating the Owner Address
+
+The repo has preset a configuration for the owner as the CoW Treasury. If you want to do this, you should do so prior to deployment in `hardhat.config.ts`:
+
+```typescript
+owner: {
+    default: '<OWNER_ADDRESS>', // insert your address here
+},
 ```
 
 ## Important Commands
