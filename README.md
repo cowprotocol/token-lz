@@ -206,12 +206,6 @@ pnpm hardhat lz:oft:send --src-eid <SOURCE_EID> --dst-eid <DEST_EID> --amount <A
 forge fmt          # Fix all files
 ```
 
-Run tests with Foundry and Hardhat:
-```bash
-pnpm test              # Run all tests
-pnpm test:forge        # Run Foundry tests only
-pnpm test:hardhat      # Run Hardhat tests only
-```
 
 ## Resources
 
