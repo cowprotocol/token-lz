@@ -14,6 +14,7 @@ import { HardhatUserConfig, HttpNetworkAccountsUserConfig } from 'hardhat/types'
 import { EndpointId } from '@layerzerolabs/lz-definitions'
 
 import './tasks/sendOFT'
+import './tasks/solana/tasks'
 import './type-extensions'
 
 // Set your preferred authentication method
