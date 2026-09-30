@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const lz = require('@layerzerolabs/lz-definitions');
+const { readWireExport, isSolanaEid, groupByEid } = require('./lib/wire-export');
 
 if (process.argv.length != 3) {
     console.error('convert-to-safe-format.js -- A script to convert a transaction list from lz:oapp:wire to Safe Transaction Builder format.')
@@ -9,19 +10,11 @@ if (process.argv.length != 3) {
     process.exit(1);
 }
 
-// Read the input transactions
-const txns = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+// Read the input transactions, skipping Solana (use convert-to-squads-format.js for those)
+const txns = readWireExport(process.argv[2]).filter(txn => !isSolanaEid(txn.eid));
 
 // Group transactions by EID
-const txnsByEid = {};
-
-txns.forEach(txn => {
-  const eid = txn.point.eid;
-  if (!txnsByEid[eid]) {
-    txnsByEid[eid] = [];
-  }
-  txnsByEid[eid].push(txn);
-});
+const txnsByEid = groupByEid(txns);
 
 // Convert to Safe Transaction Builder format
 // The Safe Transaction Builder expects a format like:
@@ -44,7 +37,7 @@ txns.forEach(txn => {
 Object.keys(txnsByEid).forEach(eid => {
   const networkName = lz.endpointIdToNetwork(eid);
   const transactions = txnsByEid[eid].map(txn => ({
-    to: txn.point.address,
+    to: txn.to,
     value: "0",
     data: txn.data,
     contractMethod: null,

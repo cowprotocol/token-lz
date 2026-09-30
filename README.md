@@ -122,6 +122,10 @@ The contracts can be verified on Etherscan by manually submitting the `solcInput
 
 ### 4. Wire the Contracts
 
+It is recommended to do this in two parts: first, the EVM networks, and then Solana network.
+
+#### EVM setup
+
 Generate wiring transactions:
 ```bash
 pnpm hardhat lz:oapp:wire --oapp-config layerzero.config.ts --output-filename txns.json
@@ -151,6 +155,24 @@ Created safe-txns-eid-avalanche-mainnet.json with 9 transactions
 A series of files will be created in your project folder for transactions to execute on each network. Stage and Execute the generated batches through (Safe Transaction Builder)[https://app.safe.global/apps/open?appUrl=https%3A%2F%2Fapps-portal.safe.global%2Ftx-builder].
 
 **Note:** When deploying in the Safe Transaction Builder, you may see a warning about the uploaded JSON file having invalid chain ID. These errors are expected due to an issue with LayerZero's providing of EVM chain ID mapping, and can be safely ignored. With this in mind, Please be careful to double check the network when uploading.
+
+Solana transactions are skipped by the Safe script. Convert them for the Squads multisig with:
+```bash
+node scripts/convert-to-squads-format.js txns.json
+```
+
+This creates `squads-txns-eid-solana-mainnet.json`, which holds one base58 transaction per entry. Check that the printed `signer` is your Squads vault address. Then, in the Squads app, open a draft in the Transaction Builder and, for each entry in order, choose "Add instruction" → "Import base58 encoded tx" and paste the `base58` value.
+
+#### Solana setup
+
+It is possible to stage the necessary transactions directly to a Squads safe. Using a signer for your Squads multisig, you will need to acquire the following addresses associated with your multisig:
+
+```
+pnpm hardhat lz:oapp:wire --oapp-config layerzero.config.ts --skip-connections-from-eids 30101,30102,30106 --multisig-key <multisig key>
+```
+
+Replace `<multisig key>` with the actual account . **NOTE: this is not a private key or your Vault public key.**. Instead, this is the owner program of your vault, which can be resolved by checking on Solscan, going to your vault's address page, and lcicking on the "Multisig" tab. A "Multisig Account" will be displayed.
+
 
 ## Configuration
 

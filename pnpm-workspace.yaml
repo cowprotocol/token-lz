@@ -10,3 +10,12 @@ allowBuilds:
   web3: true
   web3-bzz: true
   web3-shh: true
+packageExtensions:
+  # protocol-kit@1 imports safe-core-sdk-types without declaring it; it used to resolve only via hoisting
+  '@safe-global/protocol-kit@1':
+    dependencies:
+      '@safe-global/safe-core-sdk-types': ^2.3.0
+overrides:
+  # Solana tooling does `instanceof PublicKey` checks across packages; multiple web3.js copies break them
+  '@solana/web3.js': 1.95.8
+  'utf-8-validate': 5.0.10

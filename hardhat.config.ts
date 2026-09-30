@@ -28,13 +28,12 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY
 
 const OWNER = process.env.OWNER || '0x616dE58c011F8736fa20c7Ae5352F7f6FB9F0669'
 
-const accounts: HttpNetworkAccountsUserConfig | undefined = MNEMONIC
-    ? { mnemonic: MNEMONIC }
-    : PRIVATE_KEY
-      ? [PRIVATE_KEY]
-      : undefined
+// Fall back to an empty local account list rather than `undefined`: with `undefined`, hardhat
+// defaults to "remote" accounts and queries `eth_accounts`, which public RPCs don't support.
+const accounts: HttpNetworkAccountsUserConfig =
+    MNEMONIC ? { mnemonic: MNEMONIC } : PRIVATE_KEY ? [PRIVATE_KEY] : []
 
-if (accounts == null) {
+if (!MNEMONIC && !PRIVATE_KEY) {
     console.warn(
         'Could not find MNEMONIC or PRIVATE_KEY environment variables. It will not be possible to execute transactions in your example.'
     )
@@ -93,5 +92,7 @@ const config: HardhatUserConfig = {
         },
     },
 }
+
+console.log('hh config', config);
 
 export default config

@@ -54,7 +54,8 @@ const SOLANA_ENFORCED_OPTIONS: OAppEnforcedOption[] = [
 const networks: {
     contract: OmniPointHardhat,
     confirmations: number,
-    enforcedOptions: OAppEnforcedOption,
+    enforcedOptions: OAppEnforcedOption[],
+    config?: { owner?: string, delegate?: string },
 }[] = [
     {
         contract: {
@@ -84,6 +85,10 @@ const networks: {
         contract: {
             eid: EndpointId.SOLANA_V2_MAINNET,
             address: 'F3Q4oxHyB49zPMC8V54oLkCM8844CmwNY6MmipXvS2GL'
+        },
+        config: {
+            owner: '5CbSkyzNq3zzTDVN9MTz1963HgDPttCpkngEfVmLSP6U',
+            delegate: '5CbSkyzNq3zzTDVN9MTz1963HgDPttCpkngEfVmLSP6U'
         },
         confirmations: 32,
         enforcedOptions: SOLANA_ENFORCED_OPTIONS
