@@ -9,8 +9,8 @@ import { createLogger } from '@layerzerolabs/io-devtools'
 import { ChainType, endpointIdToChainType, endpointIdToNetwork } from '@layerzerolabs/lz-definitions'
 import { Options, addressToBytes32 } from '@layerzerolabs/lz-v2-utilities'
 
-import { SendResult } from './types'
-import { DebugLogger, KnownErrors, getLayerZeroScanLink } from './utils'
+import { SendResult } from '../common/types'
+import { DebugLogger, KnownErrors, getLayerZeroScanLink } from '../common/utils'
 
 const logger = createLogger()
 
@@ -21,9 +21,8 @@ export interface EvmArgs {
     to: string
     oappConfig: string
     minAmount?: string
-    extraLzReceiveOptions?: string[]
-    extraLzComposeOptions?: string[]
-    extraNativeDropOptions?: string[]
+    /** Hex-encoded type 3 options; when omitted, empty options are sent and enforced options apply */
+    extraOptions?: string
     composeMsg?: string
     oftAddress?: string
 }
@@ -36,9 +35,7 @@ export async function sendEvm(
         to,
         oappConfig,
         minAmount,
-        extraLzReceiveOptions,
-        extraLzComposeOptions,
-        extraNativeDropOptions,
+        extraOptions,
         composeMsg,
         oftAddress,
     }: EvmArgs,
@@ -120,95 +117,18 @@ export async function sendEvm(
     // 7️⃣ hex string → Uint8Array → zero-pad to 32 bytes
     const toBytes = addressToBytes32(to)
 
-    // 8️⃣ Build options dynamically using Options.newOptions()
-    let options = Options.newOptions()
-
-    // Add lzReceive options
-    if (extraLzReceiveOptions && extraLzReceiveOptions.length > 0) {
-        // Handle case where Hardhat's CSV parsing splits "gas,value" into separate elements
-        if (extraLzReceiveOptions.length % 2 !== 0) {
-            throw new Error(
-                `Invalid lzReceive options: received ${extraLzReceiveOptions.length} values, but expected pairs of gas,value`
-            )
-        }
-
-        for (let i = 0; i < extraLzReceiveOptions.length; i += 2) {
-            const gas = Number(extraLzReceiveOptions[i])
-            const value = Number(extraLzReceiveOptions[i + 1]) || 0
-            options = options.addExecutorLzReceiveOption(gas, value)
-            logger.info(`Added lzReceive option: ${gas} gas, ${value} value`)
-        }
-    }
-
-    // Add lzCompose options
-    if (extraLzComposeOptions && extraLzComposeOptions.length > 0) {
-        // Handle case where Hardhat's CSV parsing splits "index,gas,value" into separate elements
-        if (extraLzComposeOptions.length % 3 !== 0) {
-            throw new Error(
-                `Invalid lzCompose options: received ${extraLzComposeOptions.length} values, but expected triplets of index,gas,value`
-            )
-        }
-
-        for (let i = 0; i < extraLzComposeOptions.length; i += 3) {
-            const index = Number(extraLzComposeOptions[i])
-            const gas = Number(extraLzComposeOptions[i + 1])
-            const value = Number(extraLzComposeOptions[i + 2]) || 0
-            options = options.addExecutorComposeOption(index, gas, value)
-            logger.info(`Added lzCompose option: index ${index}, ${gas} gas, ${value} value`)
-        }
-    }
-
-    // Add native drop options
-    if (extraNativeDropOptions && extraNativeDropOptions.length > 0) {
-        // Handle case where Hardhat's CSV parsing splits "amount,recipient" into separate elements
-        if (extraNativeDropOptions.length % 2 !== 0) {
-            throw new Error(
-                `Invalid native drop options: received ${extraNativeDropOptions.length} values, but expected pairs of amount,recipient`
-            )
-        }
-
-        for (let i = 0; i < extraNativeDropOptions.length; i += 2) {
-            const amountStr = extraNativeDropOptions[i]
-            const recipient = extraNativeDropOptions[i + 1]
-
-            if (!amountStr || !recipient) {
-                throw new Error(
-                    `Invalid native drop option: Both amount and recipient must be provided. Got amount="${amountStr}", recipient="${recipient}"`
-                )
-            }
-
-            try {
-                options = options.addExecutorNativeDropOption(amountStr.trim(), recipient.trim())
-                logger.info(`Added native drop option: ${amountStr.trim()} wei to ${recipient.trim()}`)
-            } catch (error) {
-                // Provide helpful context if the amount exceeds protocol limits
-                const maxUint128 = BigInt('340282366920938463463374607431768211455') // 2^128 - 1
-                const maxUint128Ether = Number(maxUint128) / 1e18 // Convert to ETH for readability
-
-                throw new Error(
-                    `Failed to add native drop option with amount ${amountStr.trim()} wei. ` +
-                        `LayerZero protocol constrains native drop amounts to uint128 maximum ` +
-                        `(${maxUint128.toString()} wei ≈ ${maxUint128Ether.toFixed(2)} ETH). ` +
-                        `Original error: ${error instanceof Error ? error.message : String(error)}`
-                )
-            }
-        }
-    }
-
-    const extraOptions = options.toHex()
-
-    // 9️⃣ build sendParam and dispatch
+    // 8️⃣ build sendParam and dispatch
     const sendParam = {
         dstEid,
         to: toBytes,
         amountLD: amountUnits.toString(),
         minAmountLD: minAmount ? parseUnits(minAmount, decimals).toString() : amountUnits.toString(),
-        extraOptions: extraOptions,
+        extraOptions: extraOptions ?? Options.newOptions().toHex(),
         composeMsg: composeMsg ? composeMsg.toString() : '0x',
         oftCmd: '0x',
     }
 
-    // 10️⃣ Quote (MessagingFee = { nativeFee, lzTokenFee })
+    // 9️⃣ Quote (MessagingFee = { nativeFee, lzTokenFee })
     logger.info('Quoting the native gas cost for the send transaction...')
     let msgFee: { nativeFee: BigNumber; lzTokenFee: BigNumber }
     try {

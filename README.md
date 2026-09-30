@@ -206,6 +206,34 @@ owner: {
 },
 ```
 
+The owner and delegate for Solana is set directly in `layerzero.config.ts` in the `networks` definition:
+
+```
+const networks: {
+    contract: OmniPointHardhat,
+    confirmations: number,
+    enforcedOptions: OAppEnforcedOption[],
+    config?: { owner?: string, delegate?: string },
+}[] = [
+    ...
+    {
+        contract: {
+            eid: EndpointId.SOLANA_V2_MAINNET,
+            address: '<SOLANA_PROGRAM_DEPLOYMENT>'
+        },
+        config: {
+            owner: '<OWNER_ADDRESS>',
+            delegate: '<DELEGATE_ADDRESS>'
+        },
+        ...
+    }
+];
+```
+
+The delegate is the address that can configure the LayerZero endpoint configuration, so it is recommended to set it the same as the owner.
+
+After setting the owner address on either network, running the [wire command](#4-wire-the-contracts) will refresh the on-chain configuration.
+
 ## Important Commands
 
 ### Testing
@@ -222,6 +250,8 @@ Its handy to use the CLI to send tokens once they are deployed:
 ```bash
 pnpm hardhat lz:oft:send --src-eid <SOURCE_EID> --dst-eid <DEST_EID> --amount <AMOUNT> --to <ADDRESS>
 ```
+
+The same command sends from Solana (`--src-eid 30168`), using `RPC_URL_SOLANA` and `SOLANA_PRIVATE_KEY` (or `SOLANA_KEYPAIR_PATH`, falling back to `~/.config/solana/id.json`) and the OFT store in `deployments/solana-mainnet/OFT.json`. Use a base58 `--to` of the owner of the token account when sending to Solana. When sending to solana, the ATA is created automatically/as part of the EVM native fee.
 
 ### Linting
 ```bash

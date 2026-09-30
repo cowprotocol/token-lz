@@ -190,10 +190,6 @@ export const getOftStoreAddress = (eid: EndpointId): string | null => {
     }
 }
 
-// TODO: move below outside of solana folder since it's generic
-export const getLayerZeroScanLink = (hash: string, isTestnet = false) =>
-    isTestnet ? `https://testnet.layerzeroscan.com/tx/${hash}` : `https://layerzeroscan.com/tx/${hash}`
-
 export const getExplorerTxLink = (hash: string, isTestnet = false) =>
     `https://solscan.io/tx/${hash}?cluster=${isTestnet ? 'devnet' : 'mainnet-beta'}`
 

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+
 import {
     CreateV1InstructionAccounts,
     CreateV1InstructionArgs,
@@ -64,6 +66,11 @@ interface CreateOFTTaskArgs {
      * The optional token mint ID, for Mint-And-Burn-Adapter only.
      */
     mint?: string
+
+    /**
+     * Optional path to a Solana keypair JSON file (e.g. from `solana-keygen grind`) to use as the new token mint.
+     */
+    mintKeypair?: string
 
     /**
      * The name of the token.
@@ -138,6 +145,12 @@ task('lz:oft:solana:create', 'Mints new SPL Token and creates new OFT Store acco
     .addOptionalParam('sharedDecimals', 'OFT shared decimals (default=6)', DEFAULT_SHARED_DECIMALS, devtoolsTypes.int)
     .addParam('name', 'Token Name', 'MockOFT', devtoolsTypes.string)
     .addOptionalParam('mint', 'The Token mint public key (used for MABA only)', undefined, devtoolsTypes.string)
+    .addOptionalParam(
+        'mintKeypair',
+        'Path to a keypair JSON file to use as the new token mint (e.g. a vanity address from `solana-keygen grind`)',
+        undefined,
+        devtoolsTypes.string
+    )
     .addParam('programId', 'The OFT Program id')
     .addParam('sellerFeeBasisPoints', 'Seller fee basis points', 0, devtoolsTypes.int) // Note: This is for Metaplex's Token Metadata standard (not enforced on-chain). This is not related to OFT fees.
     .addParam('symbol', 'Token Symbol', 'MOFT', devtoolsTypes.string)
@@ -172,6 +185,7 @@ task('lz:oft:solana:create', 'Mints new SPL Token and creates new OFT Store acco
             localDecimals: decimals,
             sharedDecimals,
             mint: mintStr,
+            mintKeypair: mintKeypairPath,
             name,
             programId: programIdStr,
             sellerFeeBasisPoints,
@@ -188,6 +202,9 @@ task('lz:oft:solana:create', 'Mints new SPL Token and creates new OFT Store acco
             const isMABA = !!mintStr // the difference between MABA and OFT Adapter is that MABA uses mint/burn mechanism whereas OFT Adapter uses lock/unlock mechanism
             if (tokenProgramStr !== TOKEN_PROGRAM_ID.toBase58() && !isMABA) {
                 throw new Error('Non-Mint-And-Burn-Adapter does not support custom token programs')
+            }
+            if (isMABA && mintKeypairPath) {
+                throw new Error('Mint-And-Burn-Adapter uses an existing mint; --mint-keypair is not supported')
             }
             if (isMABA && amount) {
                 throw new Error('Mint-And-Burn-Adapter does not support minting tokens')
@@ -280,7 +297,14 @@ task('lz:oft:solana:create', 'Mints new SPL Token and creates new OFT Store acco
 
             const mint = isMABA
                 ? createNoopSigner(publicKey(mintStr))
-                : createSignerFromKeypair(umi, eddsa.generateKeypair())
+                : createSignerFromKeypair(
+                      umi,
+                      mintKeypairPath
+                          ? eddsa.createKeypairFromSecretKey(
+                                Uint8Array.from(JSON.parse(readFileSync(mintKeypairPath, 'utf-8')))
+                            )
+                          : eddsa.generateKeypair()
+                  )
             const isTestnet = eid == EndpointId.SOLANA_V2_TESTNET
             if (!isMABA) {
                 const createV1Args: CreateV1InstructionAccounts & CreateV1InstructionArgs = {

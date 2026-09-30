@@ -52,6 +52,9 @@ export async function getBlockExplorerLink(srcEid: number, txHash: string): Prom
     return
 }
 
+export const getLayerZeroScanLink = (hash: string, isTestnet = false) =>
+    isTestnet ? `https://testnet.layerzeroscan.com/tx/${hash}` : `https://layerzeroscan.com/tx/${hash}`
+
 export const createSdkFactory = (
     userAccount: PublicKey,
     programId: PublicKey,

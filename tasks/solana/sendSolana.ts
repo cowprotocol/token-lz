@@ -11,7 +11,7 @@ import { addressToBytes32 } from '@layerzerolabs/lz-v2-utilities'
 import { oft } from '@layerzerolabs/oft-v2-solana-sdk'
 
 import { SendResult } from '../common/types'
-import { DebugLogger, KnownErrors, isEmptyOptionsSolana } from '../common/utils'
+import { DebugLogger, KnownErrors, getLayerZeroScanLink, isEmptyOptionsSolana } from '../common/utils'
 
 import { parseDecimalToUnits, silenceSolana429 } from './utils'
 
@@ -20,7 +20,6 @@ import {
     addComputeUnitInstructions,
     deriveConnection,
     getDefaultAddressLookupTable,
-    getLayerZeroScanLink,
     getSolanaDeployment,
 } from './index'
 

@@ -13,7 +13,7 @@ import { HardhatUserConfig, HttpNetworkAccountsUserConfig } from 'hardhat/types'
 
 import { EndpointId } from '@layerzerolabs/lz-definitions'
 
-import './tasks/sendOFT'
+import './tasks/common/sendOFT'
 import './tasks/solana/tasks'
 import './type-extensions'
 
@@ -92,7 +92,5 @@ const config: HardhatUserConfig = {
         },
     },
 }
-
-console.log('hh config', config);
 
 export default config
